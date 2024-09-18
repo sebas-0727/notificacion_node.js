@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones en la Página</title>
+    <style>
+        /* Estilos para la notificación */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+
+            // URL de redirección cuando se hace clic en la notificación
+            const redirectUrl = 'https://drive.google.com/drive/folders/18VIXQ2NvBX__MmCBdIq5KNt7-29GZDkD'; // Cambia esto a la URL deseada
+
+            // Recibir evento de nuevo reporte desde el servidor
+            socket.on('new-report', (data) => {
+                showNotification(data.title, data.message);
+            });
+
+            function showNotification(title, message) {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `<strong>${title}</strong><p>${message}</p>`;
+
+                document.body.appendChild(notification);
+
+                // Mostrar la notificación
+                notification.style.display = 'block';
+
+                // Añadir evento de clic para redirigir a la URL
+                notification.addEventListener('click', () => {
+                    window.location.href = redirectUrl;
+                });
+
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    document.body.removeChild(notification);
+                }, 5000);
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Bienvenido al sistema de notificaciones</h1>
+    <p>Esta página mostrará notificaciones en la página cuando se detecten nuevos reportes.</p>
+</body>
+</html>
